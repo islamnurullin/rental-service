@@ -1,0 +1,30 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon index.js",
+    "swagger:gen-examples": "node scripts/gen-swagger-examples.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@faker-js/faker": "10.3.0",
+    "cors": "2.8.6",
+    "dotenv": "17.2.3",
+    "express": "5.2.1",
+    "fs": "0.0.1-security",
+    "pg": "8.18.0",
+    "pg-hstore": "2.3.4",
+    "sequelize": "6.37.7",
+    "swagger-ui-express": "5.0.1",
+    "yaml": "2.8.2",
+    "yamljs": "0.3.0"
+  },
+  "devDependencies": {
+    "nodemon": "3.1.11"
+  }
+}

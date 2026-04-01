@@ -1,0 +1,329 @@
+openapi: 3.0.0
+info:
+  title: Housing Rental API
+  version: 1.0.0
+  description: API для работы с предложениями, отзывами и пользователями
+servers:
+  - url: http://localhost:5000
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+tags:
+  - name: Users
+  - name: Offers
+  - name: Reviews
+paths:
+  /login:
+    post:
+      summary: Авторизация пользователя
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+            example:
+              email: Felix_Satterfield@gmail.com
+              password: ANM_xrL4hH
+      responses:
+        "200":
+          description: Успешный логин, возвращает токен
+    get:
+      summary: Проверка токена
+      tags:
+        - Users
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Успешный логин, возвращает токен
+        "401":
+          description: Нет токена или невалидный токен
+  /register:
+    post:
+      summary: Регистрация пользователя
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                userType:
+                  type: string
+                username:
+                  type: string
+                password:
+                  type: string
+                avatar:
+                  type: string
+            example:
+              email: Paula_Tremblay@hotmail.com
+              userType: normal
+              username: Pat86
+              password: lNgaNNidZ5
+              avatar: https://cdn.jsdelivr.net/gh/faker-js/assets-person-portrait/male/512/67.jpg
+      responses:
+        "200":
+          description: Успешный запрос, возвращает данные пользователя
+        "400":
+          description: Неправильный запрос
+  /logout:
+    delete:
+      summary: Logout
+      tags:
+        - Users
+      security:
+        - bearerAuth: []
+      responses:
+        "204":
+          description: Успешный разлогин
+        "401":
+          description: Нет токена или невалидный токен
+  /offers:
+    get:
+      summary: Получить все офферы
+      tags:
+        - Offers
+      responses:
+        "200":
+          description: Запрос выполнен успешно
+    post:
+      summary: Создание нового предложения
+      description: >
+        Создает новое предложение (offer). Принимает данные в формате
+        multipart/form-data. Поле previewImage обязательно. Поле photos — массив
+        из 6 файлов.
+      tags:
+        - Offers
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - title
+                - description
+                - city
+                - price
+                - rooms
+                - guests
+                - previewImage
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                publishDate:
+                  type: string
+                  format: date
+                city:
+                  type: string
+                isPremium:
+                  type: boolean
+                isFavorite:
+                  type: boolean
+                rating:
+                  type: number
+                type:
+                  type: string
+                rooms:
+                  type: integer
+                guests:
+                  type: integer
+                price:
+                  type: number
+                features:
+                  type: string
+                  description: JSON-строка массива из значений 'Breakfast', 'Air conditioning',
+                    'Laptop friendly workspace', 'Baby seat', 'Washer',
+                    'Towels', 'Fridge'
+                commentsCount:
+                  type: integer
+                latitude:
+                  type: number
+                longitude:
+                  type: number
+                userId:
+                  type: integer
+                previewImage:
+                  type: string
+                  format: binary
+                  description: Основное изображение (обязательно)
+                photos:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                  description: Дополнительные изображения
+            examples:
+              generated:
+                summary: Сгенерированный пример предложения
+                value:
+                  title: ascisco creo uterque
+                  description: Conforto undique aedificium collum sophismata ara quam vivo templum
+                    admoveo. Suscipio solium patrocinor amplexus truculenter
+                    tepidus. Acerbitas angulus ullam vulnero validus aeternus
+                    depulso.
+                  publishDate: 2026-03-08
+                  city: Unaworth
+                  isPremium: true
+                  isFavorite: false
+                  rating: 4.6
+                  type: apartment
+                  rooms: 4
+                  guests: 6
+                  price: 306
+                  features: '["Air conditioning","Washer","Fridge","Laptop friendly workspace"]'
+                  commentsCount: 34
+                  latitude: -17.4387
+                  longitude: -170.5766
+                  userId: 4
+                  previewImage: image.jpg
+                  photos:
+                    - photo1.jpg
+                    - photo2.jpg
+                    - photo3.jpg
+      responses:
+        "201":
+          description: Предложение успешно создано
+        "400":
+          description: Ошибка валидации данных
+        "401":
+          description: Не авторизован
+  /comments/{id}:
+    get:
+      summary: Получение отзывов по id оффера
+      tags:
+        - Reviews
+      responses:
+        "200":
+          description: Список отзывов для оффера
+        "404":
+          description: Оффер с таким id не найден
+      parameters:
+        - &a1
+          name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: cDhgANxHLVSP3x0PN3jEteUz
+          description: ID оффера
+    post:
+      summary: Отправка отзыва
+      tags:
+        - Reviews
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                comment:
+                  type: string
+                rating:
+                  type: number
+            example:
+              comment: Delectus adhuc ducimus cibo. Cuppedia modi deprimo aestas deripio
+                admiratio usque.
+              rating: 2
+      responses:
+        "200":
+          description: Успешный запрос,
+        "400":
+          description: Неправильный запрос
+      parameters:
+        - *a1
+  /favorite/{id}/{option}:
+    post:
+      summary: Сделать оффер избранным
+      tags:
+        - Offers
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Запрос выполнен успешно
+        "401":
+          description: Не авторизован
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: Y0InCPpmtOCc8w89XpXB3RoI
+          description: ID оффера
+        - name: option
+          in: path
+          required: true
+          schema:
+            type: string
+            enum:
+              - "1"
+              - "0"
+          example: "1"
+          description: 1 - добавить в избранное, 0 - удалить из избранного
+  /offers/{id}:
+    get:
+      summary: Получить оффер по id
+      tags:
+        - Offers
+      responses:
+        "200":
+          description: Запрос выполнен успешно
+        "404":
+          description: Оффер с таким id не найден
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: Imjszyqh3yeb1WsMEBpGjQ4F
+          description: ID оффера
+  /static/{path}:
+    get:
+      summary: Получить изображение
+      tags:
+        - Offers
+      responses:
+        "200":
+          description: Запрос выполнен успешно
+        "404":
+          description: Такое изображение не найдено
+      parameters:
+        - name: path
+          in: path
+          required: true
+          schema:
+            type: string
+          example: images/apartment-123.jpg
+          description: Путь к изображению
+  /favorite:
+    get:
+      summary: Получить все избранные офферы
+      tags:
+        - Offers
+      responses:
+        "200":
+          description: Запрос выполнен успешно
